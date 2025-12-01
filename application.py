@@ -20,6 +20,3 @@ def list_products():
 def create_order():
     data = request.json
     return jsonify({"message": "Order created", "order": data})
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
