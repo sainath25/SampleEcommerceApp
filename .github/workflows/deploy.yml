@@ -1,0 +1,47 @@
+name: Deploy SampleEcommerceApp to Elastic Beanstalk
+ 
+on:
+  push:
+    branches:
+      - main
+ 
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+ 
+    steps:
+      # 1. Checkout Code
+      - name: Checkout source code
+        uses: actions/checkout@v4
+ 
+      # 2. Setup Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+ 
+      # 3. Install Dependencies (Validation Only)
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+ 
+      # 4. Create Deployment ZIP
+      - name: Create ZIP package
+        run: |
+          zip -r AppPackage.zip . \
+            -x "*.git*" \
+            -x "*.github*" 
+ 
+      # 5. Deploy to Elastic Beanstalk using EB Deploy Action
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: SampleEcommerce
+          environment_name: SampleEcommerce-env
+          region: ap-southeast-1
+          version_label: app-${{ github.sha }}
+          deployment_package: AppPackage.zip
+          use_existing_version_if_available: false
