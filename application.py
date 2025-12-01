@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
+application = app   # <-- THIS FIXES EB LOADING ISSUE
 
 products = [
     {"id": 1, "name": "iPhone 15", "price": 1200},
